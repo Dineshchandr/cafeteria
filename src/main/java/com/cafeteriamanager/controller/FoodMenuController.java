@@ -122,4 +122,10 @@ public class FoodMenuController {
 
     }
 
+    @GetMapping("/viewMenuItem")
+    public FoodMenuItemMappingDto viewMenu(@RequestParam(name = "menuId")  Long menuId) throws FoodMenuNotFoundException{
+        FoodMenuItemMappingDto dto=foodMenuServiceApi.retrieveMenuItem(menuId);
+        return dto;
+    }
+
 }

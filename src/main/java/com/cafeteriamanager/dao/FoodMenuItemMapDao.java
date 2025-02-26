@@ -14,7 +14,7 @@ public interface FoodMenuItemMapDao extends JpaRepository<FoodMenuFoodItemMap,Lo
     @Query("SELECT f FROM FoodMenuFoodItemMap f WHERE f.foodmenu.id = :menuId AND f.foodItem.id = :itemId")
     FoodMenuFoodItemMap findIdByFoodMenuAndFoodItemId(@Param("menuId") Long menuId, @Param("itemId") Long itemId);
 
-    List<FoodMenuFoodItemMap>findByFoodMenuId(Long menuID);
+//    List<FoodMenuFoodItemMap>findByFoodMenuId(Long menuID);
 
 
 }

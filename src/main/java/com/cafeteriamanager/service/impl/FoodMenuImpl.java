@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.cafeteriamanager.dto.FoodItemDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -120,10 +121,22 @@ public class FoodMenuImpl implements FoodMenuServiceApi {
 
     @Override
     public FoodMenuItemMappingDto retrieveMenuItem(Long menuId) throws FoodMenuNotFoundException {
+        Optional<FoodMenuFoodItemMap> menuFoodItemMap = foodMenuItemMapDao.findById(menuId);
+        if (menuFoodItemMap.isEmpty()) {
+            throw new FoodMenuNotFoundException("Menu with ID " + menuId + " not found");
+        }
 
+        FoodMenuFoodItemMap map = menuFoodItemMap.get();
 
-        return  null;
+        List<FoodItemDTO> foodItemDTOs = List.of(foodItemMapper.toDto(map.getFoodItem()));
+
+        return new FoodMenuItemMappingDto(
+                map.getFoodmenu().getName(),
+                map.getFoodmenu().getAvailability(),
+                foodItemDTOs,
+                map.getFoodmenu().getCreatedAt(),
+                map.getFoodmenu().getModifyAt()
+        );
     }
-
 
 }
