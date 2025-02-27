@@ -24,8 +24,9 @@ public class FoodMenuFoodItemMap {
     @Column(name = "id")
     private  Long id;
 
-    @OneToOne
-    private  FoodMenu foodmenu;
+    //    @OneToOne
+        @Column(name = "foodmenu")
+        private  FoodMenu foodmenu;
 
     @OneToOne
     private FoodItem foodItem;

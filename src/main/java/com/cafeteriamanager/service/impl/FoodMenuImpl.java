@@ -1,7 +1,6 @@
 package com.cafeteriamanager.service.impl;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -100,6 +99,10 @@ public class FoodMenuImpl implements FoodMenuServiceApi {
 
         FoodMenu menu = foodMenuDao.findById(menuId).orElseThrow(() -> new FoodMenuNotFoundException("MENU NOT FOUND"));
         FoodItem item = foodItemDao.findById(itemId).orElseThrow(() -> new FoodMenuNotFoundException("ITEM NOT FOUND"));
+
+        if(foodMenuItemMapDao.findIdByFoodMenuAndFoodItemId(menu.getId(),item.getId())!=null){
+            throw new AlreadyExistingFoodMenuException("ALREADY HAVE");
+        }
         FoodMenuFoodItemMap foodMenuFoodItemMap = new FoodMenuFoodItemMap();
         foodMenuFoodItemMap.setFoodItem(item);
         foodMenuFoodItemMap.setFoodmenu(menu);
@@ -112,31 +115,32 @@ public class FoodMenuImpl implements FoodMenuServiceApi {
         foodMenuItemQuantityMap.setCreatedAt(Instant.now());
         foodMenuItemQuantityMap.setModifyAt(Instant.now());
         foodMenuItemQuantityMapDao.save(foodMenuItemQuantityMap);
+
+        List<FoodItem> list=foodMenuItemMapDao.findFoodItemsByFoodMenuId(menu.getId());
+
+        List<FoodItemDTO>dtos=list.stream().map(foodItemMapper::toDto).collect(Collectors.toList());
+
+
         FoodMenuItemMappingDto foodMenuItemMappingDto = new FoodMenuItemMappingDto(
                 foodMenuFoodItemMap.getFoodmenu().getName(), foodMenuFoodItemMap.getFoodmenu().getAvailability(),
-                List.of(foodItemMapper.toDto(foodMenuFoodItemMap.getFoodItem())),
+                dtos,
                 foodMenuFoodItemMap.getFoodmenu().getCreatedAt(), foodMenuFoodItemMap.getFoodmenu().getModifyAt());
         return foodMenuItemMappingDto;
     }
 
     @Override
     public FoodMenuItemMappingDto retrieveMenuItem(Long menuId) throws FoodMenuNotFoundException {
-        Optional<FoodMenuFoodItemMap> menuFoodItemMap = foodMenuItemMapDao.findById(menuId);
-        if (menuFoodItemMap.isEmpty()) {
-            throw new FoodMenuNotFoundException("Menu with ID " + menuId + " not found");
+
+//       FoodMenu menu= foodMenuItemMapDao.findByF(menuId);
+
+        List<FoodItem> items =foodMenuItemMapDao.findFoodItemsByFoodMenuId(menuId);
+        if(items.isEmpty()){
+            throw  new FoodMenuNotFoundException("MENU NOT FOUND");
         }
+        List<FoodItemDTO>list= items.stream().map(foodItemMapper::toDto).collect(Collectors.toList());
 
-        FoodMenuFoodItemMap map = menuFoodItemMap.get();
+        return new FoodMenuItemMappingDto(menu.getName(),menu.getAvailability(),list,menu.getCreatedAt(),menu.getModifyAt());
 
-        List<FoodItemDTO> foodItemDTOs = List.of(foodItemMapper.toDto(map.getFoodItem()));
-
-        return new FoodMenuItemMappingDto(
-                map.getFoodmenu().getName(),
-                map.getFoodmenu().getAvailability(),
-                foodItemDTOs,
-                map.getFoodmenu().getCreatedAt(),
-                map.getFoodmenu().getModifyAt()
-        );
     }
 
 }
