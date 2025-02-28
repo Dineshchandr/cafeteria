@@ -181,16 +181,17 @@ public class FoodMenuImpl implements FoodMenuServiceApi {
     @Override
     public FoodMenuItemMappingDto removeMenuItemById(Long itemId) {
 
-        FoodMenuFoodItemMap map=foodMenuItemMapDao.deleteByFoodItemId(itemId);
-      Long foodMenu= map.getFoodmenu().getId();
-        FoodMenuFoodItemMap menuFoodItemMap=new FoodMenuFoodItemMap();
-        menuFoodItemMap.setFoodmenu(foodMenuItemMapDao.findByFoodmenuId(foodMenu));
-        List<FoodItem> foodItemDTOS=foodMenuItemMapDao.findFoodItemsByFoodMenuId(foodMenu);
-//        List<FoodItemDTO>list=foodItemDTOS.stream().map(foodItemMapper::toDto).
+        FoodMenuFoodItemMap map = foodMenuItemMapDao.deleteByFoodItemId(itemId);
+        FoodMenu foodMenu = map.getFoodmenu();
 
+       List<FoodItem>itemList= foodMenuItemMapDao.findFoodItemsByFoodMenuId(foodMenu.getId());
+         List<FoodItemDTO>list=itemList.stream().map(foodItemMapper::toDto).toList();
 
+        FoodMenuItemMappingDto foodMenuItemMappingDto=new FoodMenuItemMappingDto(
+                foodMenu.getName(),foodMenu.getAvailability(),list,foodMenu.getCreatedAt(),foodMenu.getModifyAt()
+        );
 
-        return null;
+        return foodMenuItemMappingDto;
     }
 
 }
