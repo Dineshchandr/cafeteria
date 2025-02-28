@@ -2,6 +2,7 @@ package com.cafeteriamanager.controller;
 
 import java.util.List;
 
+import com.cafeteriamanager.dto.DayWiseMenuDTO;
 import com.cafeteriamanager.dto.FoodMenuItemMappingDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -126,6 +127,11 @@ public class FoodMenuController {
     public FoodMenuItemMappingDto viewMenu(@RequestParam(name = "menuId")  Long menuId) throws FoodMenuNotFoundException{
         FoodMenuItemMappingDto dto=foodMenuServiceApi.retrieveMenuItem(menuId);
         return dto;
+    }
+
+    @GetMapping("/day")
+    public DayWiseMenuDTO day(@RequestParam(name = "day") String day){
+       return foodMenuServiceApi.retrieveMenuItemByDay(day);
     }
 
 }

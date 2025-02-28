@@ -1,8 +1,10 @@
 package com.cafeteriamanager.service.api;
 
+import com.cafeteriamanager.dto.DayWiseMenuDTO;
 import com.cafeteriamanager.dto.FoodMenuDTO;
 import com.cafeteriamanager.dto.FoodMenuItemMappingDto;
 import com.cafeteriamanager.exception.FoodMenuNotFoundException;
+import com.cafeteriamanager.exception.NoFoodForSpecificDayException;
 
 import java.util.List;
 
@@ -52,6 +54,21 @@ public interface FoodMenuServiceApi {
      * @throws FoodMenuNotFoundException
      */
    FoodMenuItemMappingDto retrieveMenuItem(Long menuId) throws  FoodMenuNotFoundException;
+
+    /**
+     *
+     * @param day
+     * @return
+     * @throws NoFoodForSpecificDayException
+     */
+    DayWiseMenuDTO retrieveMenuItemByDay(String day) throws NoFoodForSpecificDayException;
+
+    /**
+     *
+     * @param itemId
+     * @return
+     */
+    FoodMenuItemMappingDto removeMenuItemById(Long itemId);
 
 
 }

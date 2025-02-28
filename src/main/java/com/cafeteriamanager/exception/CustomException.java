@@ -45,4 +45,13 @@ public class CustomException {
 
     }
 
+    @ExceptionHandler
+    public  ResponseEntity<ErrorDetail>NoFoodForSpecificDayException(NoFoodForSpecificDayException noFoodForSpecificDayException){
+        log.info("Entering the NoFoodForSpecificDayException()");
+        ErrorDetail errorDetail= ErrorDetail.builder().message(HttpStatus.NO_CONTENT.name()).details(noFoodForSpecificDayException.getMessage()).build();
+        log.info("Leaving the NoFoodForSpecificDayException()");
+        return  new ResponseEntity<>(errorDetail,HttpStatus.NOT_FOUND);
+
+    }
+
 }
