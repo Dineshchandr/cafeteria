@@ -1,25 +1,28 @@
 package com.cafeteriamanager.controller;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
-import com.cafeteriamanager.dto.DayWiseMenuDTO;
-import com.cafeteriamanager.dto.FoodMenuItemMappingDto;
+import com.cafeteriamanager.dto.FoodMenuItemsQuantityDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cafeteriamanager.dto.DayWiseMenuDTO;
 import com.cafeteriamanager.dto.FoodItemDTO;
 import com.cafeteriamanager.dto.FoodMenuDTO;
+import com.cafeteriamanager.dto.FoodMenuItemMappingDto;
+import com.cafeteriamanager.entity.Availability;
 import com.cafeteriamanager.exception.AlreadyExistingFoodMenuException;
 import com.cafeteriamanager.exception.FoodMenuNotFoundException;
 import com.cafeteriamanager.service.api.FoodMenuServiceApi;
@@ -64,14 +67,15 @@ public class FoodMenuController {
         return menuDTO;
 
     }
+
     @Operation(description = "ViewFoodMenu", summary = "ViewFoodMenu",
             responses = {
-                    @ApiResponse(description = "Success", responseCode = "200",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = FoodItemDTO.class))),
-                    @ApiResponse(description = "Client Error", responseCode = "4XX",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = FoodItemDTO.class))),
+                @ApiResponse(description = "Success", responseCode = "200",
+                        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                schema = @Schema(implementation = FoodItemDTO.class))),
+                @ApiResponse(description = "Client Error", responseCode = "4XX",
+                        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                schema = @Schema(implementation = FoodItemDTO.class))),
 
             })
 
@@ -83,14 +87,15 @@ public class FoodMenuController {
         return list;
 
     }
+
     @Operation(description = "ViewFoodMenuById", summary = "ViewFoodMenuById",
             responses = {
-                    @ApiResponse(description = "Success", responseCode = "200",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = FoodItemDTO.class))),
-                    @ApiResponse(description = "Client Error", responseCode = "4XX",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = FoodItemDTO.class))),
+                @ApiResponse(description = "Success", responseCode = "200",
+                        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                schema = @Schema(implementation = FoodItemDTO.class))),
+                @ApiResponse(description = "Client Error", responseCode = "4XX",
+                        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                schema = @Schema(implementation = FoodItemDTO.class))),
 
             })
     @GetMapping("/find")
@@ -103,41 +108,62 @@ public class FoodMenuController {
     }
 
     @PatchMapping("/update-menu")
-    public FoodMenuDTO updateFoodMenu(@RequestParam(name = "id")Long id,
-                                      @RequestBody FoodMenuDTO foodMenuDTO)throws FoodMenuNotFoundException{
+    public FoodMenuDTO updateFoodMenu(@RequestParam(name = "id") Long id, @RequestBody FoodMenuDTO foodMenuDTO)
+            throws FoodMenuNotFoundException {
         log.info("Entering updateFoodMenu() Controller ");
-        FoodMenuDTO menu=foodMenuServiceApi.updateFoodMenu(id,foodMenuDTO);
+        FoodMenuDTO menu = foodMenuServiceApi.updateFoodMenu(id, foodMenuDTO);
         log.info("Leaving updateFoodMenu() Controller");
-        return  menu;
-
+        return menu;
 
     }
 
     @PatchMapping("/addItem")
     public FoodMenuItemMappingDto addItemTOMenu(@RequestParam(name = "menuId") Long menuId,
-                                                @RequestParam(name = "itemId") Long itemId )throws FoodMenuNotFoundException{
+            @RequestParam(name = "itemId") Long itemId) throws FoodMenuNotFoundException {
         log.info("Entering addItemTOMenu() Controller ");
-        FoodMenuItemMappingDto foodMenuItemMappingDto=foodMenuServiceApi.addMenuAndItem(menuId,itemId);
+        FoodMenuItemMappingDto foodMenuItemMappingDto = foodMenuServiceApi.addMenuAndItem(menuId, itemId);
         log.info("Leaving addItemTOMenu() Controller");
-        return  foodMenuItemMappingDto;
-
+        return foodMenuItemMappingDto;
 
     }
 
     @GetMapping("/viewMenuItem")
-    public FoodMenuItemMappingDto viewMenu(@RequestParam(name = "menuId")  Long menuId) throws FoodMenuNotFoundException{
-        FoodMenuItemMappingDto dto=foodMenuServiceApi.retrieveMenuItem(menuId);
+    public FoodMenuItemMappingDto viewMenu(@RequestParam(name = "menuId") Long menuId)
+            throws FoodMenuNotFoundException {
+        FoodMenuItemMappingDto dto = foodMenuServiceApi.retrieveMenuItem(menuId);
         return dto;
     }
 
     @GetMapping("/day")
-    public DayWiseMenuDTO day(@RequestParam(name = "day") String day){
-       return foodMenuServiceApi.retrieveMenuItemByDay(day);
+    public DayWiseMenuDTO day(@RequestParam(name = "day") String day) {
+        return foodMenuServiceApi.retrieveMenuItemByDay(day);
     }
 
-    @DeleteMapping("/itemremove")
-    public  FoodMenuItemMappingDto removeMenuItemById(@RequestParam(name = "id") Long id){
-        return  foodMenuServiceApi.removeMenuItemById(id);
+    @DeleteMapping("/item-remove")
+    public FoodMenuItemMappingDto removeMenuItemById(@RequestParam(name = "id") Long id) {
+        return foodMenuServiceApi.removeMenuItemById(id);
+    }
+
+    @PatchMapping("/setAvailability")
+    public FoodMenuDTO SetAvailability(@RequestParam(name = "id") Long id, @RequestBody List<Availability> day)
+            throws FoodMenuNotFoundException {
+        log.info("Entering SetAvailability() Controller ");
+        FoodMenuDTO menuDTO = foodMenuServiceApi.SetAvailability(id, day);
+        log.info("Leaving SetAvailability() Controller");
+        return menuDTO;
+
+    }
+
+    @DeleteMapping("/menu-delete/{id}")
+    public String removeMenu(@PathVariable Long id) throws FoodMenuNotFoundException {
+        log.info("Entering removeMenu() Controller ");
+        foodMenuServiceApi.deleteMenuId(id);
+        log.info("Leaving removeMenu() Controller");
+        return "MENU IS DELETED SUCCESSFULLY";
+    }
+    @PatchMapping("/addQuantity")
+    public FoodMenuItemsQuantityDto addItemQuantity(@RequestParam(name = "id")Long menuId, @RequestParam(name = "value")Integer quantity ){
+        return  foodMenuServiceApi.addItemsQuantity(menuId,quantity);
     }
 
 }

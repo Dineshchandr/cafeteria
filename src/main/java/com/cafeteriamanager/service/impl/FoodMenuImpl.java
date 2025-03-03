@@ -2,10 +2,17 @@ package com.cafeteriamanager.service.impl;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +24,7 @@ import com.cafeteriamanager.dto.DayWiseMenuDTO;
 import com.cafeteriamanager.dto.FoodItemDTO;
 import com.cafeteriamanager.dto.FoodMenuDTO;
 import com.cafeteriamanager.dto.FoodMenuItemMappingDto;
+import com.cafeteriamanager.dto.FoodMenuItemsQuantityDto;
 import com.cafeteriamanager.entity.Availability;
 import com.cafeteriamanager.entity.FoodItem;
 import com.cafeteriamanager.entity.FoodMenu;
@@ -30,6 +38,8 @@ import com.cafeteriamanager.mapper.FoodMenuMapper;
 import com.cafeteriamanager.service.api.FoodMenuServiceApi;
 
 import lombok.extern.slf4j.Slf4j;
+
+import jakarta.transaction.Transactional;
 
 @Service
 @Slf4j
@@ -179,19 +189,95 @@ public class FoodMenuImpl implements FoodMenuServiceApi {
     }
 
     @Override
+
+    @Transactional
     public FoodMenuItemMappingDto removeMenuItemById(Long itemId) {
+        FoodMenuFoodItemMap itemList = foodMenuItemMapDao.findByFoodItemId(itemId);
 
-        FoodMenuFoodItemMap map = foodMenuItemMapDao.deleteByFoodItemId(itemId);
-        FoodMenu foodMenu = map.getFoodmenu();
+        if (itemList == null) {
+            throw new RuntimeException("Food item mapping not found!");
+        }
 
-       List<FoodItem>itemList= foodMenuItemMapDao.findFoodItemsByFoodMenuId(foodMenu.getId());
-         List<FoodItemDTO>list=itemList.stream().map(foodItemMapper::toDto).toList();
+        FoodItem itemDelete = itemList.getFoodItem();
+        Long foodMenuId = itemList.getFoodmenu().getId();
 
-        FoodMenuItemMappingDto foodMenuItemMappingDto=new FoodMenuItemMappingDto(
-                foodMenu.getName(),foodMenu.getAvailability(),list,foodMenu.getCreatedAt(),foodMenu.getModifyAt()
-        );
+        FoodMenuFoodItemMap map = foodMenuItemMapDao.findByFoodmenuIdAndFoodItemId(itemDelete.getId(), foodMenuId);
 
-        return foodMenuItemMappingDto;
+        if (map == null) {
+            throw new RuntimeException("Mapping between FoodMenu and FoodItem not found!");
+        }
+
+        foodMenuItemQuantityMapDao.deleteByFoodMenuFoodItemMapId(map.getId().intValue());
+
+        foodMenuItemMapDao.deleteByFoodItemId(itemDelete.getId());
+
+        return null;
     }
+
+    @Override
+    public FoodMenuDTO SetAvailability(Long menuId, List<Availability> availability) throws FoodMenuNotFoundException {
+        FoodMenu menu = foodMenuDao.findById(menuId).orElseThrow(() -> new FoodMenuNotFoundException("MENU NOT FOUND"));
+
+        if (!Objects.equals(menu.getAvailability(), availability)) {
+            if (menu.getAvailability().size() <= 1) {
+                menu.setAvailability(availability);
+            } else {
+                List<Availability> mergedAvailability =
+                        Stream.concat(menu.getAvailability().stream(), availability.stream()).distinct()
+                                .collect(Collectors.toList());
+                menu.setAvailability(mergedAvailability);
+            }
+
+            menu.setModifyAt(Instant.now());
+        }
+
+        FoodMenu updatedMenu = foodMenuDao.save(menu);
+        return foodMenuMapper.toDto(updatedMenu);
+    }
+
+    @Override
+    public void deleteMenuId(Long menuID) throws FoodMenuNotFoundException {
+
+        FoodMenu deleteMenuId =
+                foodMenuDao.findById(menuID).orElseThrow(() -> new FoodMenuNotFoundException("MENU NOT FOUND"));
+        foodMenuDao.deleteById(deleteMenuId.getId());
+
+    }
+
+    @Override
+    public FoodMenuItemsQuantityDto addItemsQuantity(Long menuId, Integer quantity) throws FoodMenuNotFoundException {
+
+        FoodMenu fmenu = foodMenuDao.findById(menuId)
+                .orElseThrow(() -> new FoodMenuNotFoundException("Food menu not found for ID: " + menuId));
+
+        Long foodMenuItemId = foodMenuItemMapDao.findIdByFoodMenuId(menuId);
+
+        Long quantityId = foodMenuItemQuantityMapDao.findIdByFoodMenuId(foodMenuItemId);
+
+        FoodMenuItemQuantityMap itemQuantityMap = foodMenuItemQuantityMapDao.findById(quantityId)
+                .orElseThrow(() -> new FoodMenuNotFoundException("Quantity mapping not found for ID: " + quantityId));
+
+        if (!Objects.equals(itemQuantityMap.getQuantity(), quantity)) {
+            itemQuantityMap.setQuantity(quantity);
+        }
+
+        FoodMenuItemQuantityMap quantityMap = foodMenuItemQuantityMapDao.save(itemQuantityMap);
+
+        FoodMenuDTO menuDTO = new FoodMenuDTO();
+        menuDTO.setId(fmenu.getId());
+        menuDTO.setName(fmenu.getName());
+        menuDTO.setAvailability(fmenu.getAvailability());
+        menuDTO.setCreatedAt(fmenu.getCreatedAt());
+        menuDTO.setModifyAt(fmenu.getModifyAt());
+
+        Map<FoodMenuDTO, Integer> menu = new HashMap<>();
+        menu.put(menuDTO, quantityMap.getQuantity());
+
+        return null;
+
+
+
+    }
+
 
 }
