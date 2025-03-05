@@ -84,4 +84,5 @@ public interface FoodMenuServiceApi {
 
     FoodMenuItemsQuantityDto addItemsQuantity(Long menuId,Integer quantity) throws FoodMenuNotFoundException;
 
+   List<FoodMenuItemMappingDto> retrieveTodayMenu()throws  FoodMenuNotFoundException;
 }

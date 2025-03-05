@@ -1,7 +1,6 @@
 package com.cafeteriamanager.controller;
 
 import java.util.List;
-import java.util.stream.IntStream;
 
 import com.cafeteriamanager.dto.FoodMenuItemsQuantityDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -163,7 +162,18 @@ public class FoodMenuController {
     }
     @PatchMapping("/addQuantity")
     public FoodMenuItemsQuantityDto addItemQuantity(@RequestParam(name = "id")Long menuId, @RequestParam(name = "value")Integer quantity ){
-        return  foodMenuServiceApi.addItemsQuantity(menuId,quantity);
+        log.info("Entering addItemQuantity() Controller ");
+        FoodMenuItemsQuantityDto addItemsQuantity=  foodMenuServiceApi.addItemsQuantity(menuId,quantity);
+        log.info("Leaving addItemQuantity() Controller");
+        return  addItemsQuantity;
+
     }
 
+    @GetMapping("/day-menu")
+   public List<FoodMenuItemMappingDto> retrieveFoodMenuByDay() throws FoodMenuNotFoundException{
+        log.info("Entering retrieveFoodMenuByDay() Controller ");
+        List<FoodMenuItemMappingDto> retrieveTodayMenu=foodMenuServiceApi.retrieveTodayMenu();
+        log.info("Leaving retrieveFoodMenuByDay() Controller");
+        return retrieveTodayMenu;
+    }
 }

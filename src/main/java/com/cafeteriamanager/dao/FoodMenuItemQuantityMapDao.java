@@ -14,7 +14,7 @@ public interface FoodMenuItemQuantityMapDao extends JpaRepository<FoodMenuItemQu
     int deleteByFoodMenuFoodItemMapId(int Id);
 
     @Query("SELECT f.id FROM FoodMenuItemQuantityMap f WHERE f.id = :menuId")
-    Long findIdByFoodMenuId(@Param("menuId") Long menuId);
+    Long findIdByFoodMenuQuantityId(@Param("menuId") Long menuId);
 
 
 
