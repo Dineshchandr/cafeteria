@@ -4,6 +4,7 @@ import com.cafeteriamanager.dto.DayWiseMenuDTO;
 import com.cafeteriamanager.dto.FoodMenuDTO;
 import com.cafeteriamanager.dto.FoodMenuItemMappingDto;
 import com.cafeteriamanager.dto.FoodMenuItemsQuantityDto;
+import com.cafeteriamanager.dto.RetrieveFoodItemQuantityDto;
 import com.cafeteriamanager.entity.Availability;
 import com.cafeteriamanager.exception.FoodMenuNotFoundException;
 import com.cafeteriamanager.exception.NoFoodForSpecificDayException;
@@ -79,10 +80,31 @@ public interface FoodMenuServiceApi {
      */
 
     FoodMenuDTO SetAvailability(Long menuId,List<Availability> availability) throws FoodMenuNotFoundException;
+
+    /**
+     *
+     * @param menuID
+     * @throws FoodMenuNotFoundException
+     */
+
      void deleteMenuId(Long menuID)throws FoodMenuNotFoundException;
 
+    /**
+     *
+     * @param menuId
+     * @param quantity
+     * @return
+     * @throws FoodMenuNotFoundException
+     */
 
     FoodMenuItemsQuantityDto addItemsQuantity(Long menuId,Integer quantity) throws FoodMenuNotFoundException;
 
+    /**
+     *
+     * @return
+     * @throws FoodMenuNotFoundException
+     */
    List<FoodMenuItemMappingDto> retrieveTodayMenu()throws  FoodMenuNotFoundException;
+
+    RetrieveFoodItemQuantityDto retrieveMenuQuantity(Long foodMenuId, Long FoodItemId)throws FoodMenuNotFoundException;
 }

@@ -1,7 +1,6 @@
 package com.cafeteriamanager.dto;
 
 import com.cafeteriamanager.entity.Availability;
-import com.cafeteriamanager.entity.FoodMenuFoodItemMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -10,16 +9,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Size;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 @AllArgsConstructor
 @Data
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class FoodMenuItemsQuantityDto {
+public class RetrieveFoodItemQuantityDto {
     @Schema(description = "The name of the food menu")
     @NotBlank(message = "Menu name must not be empty")
     private String name;
@@ -30,7 +26,7 @@ public class FoodMenuItemsQuantityDto {
 
     @Schema(description = "The list food items in the menu")
     @NotNull(message = "Food menu food items and its quantities must not be empty")
-    private Map<FoodMenuDTO, Integer> foodMenuItemsQuantity;
+    private Map<FoodItemDTO, Integer> foodMenuItemsQuantity;
 
 
 }

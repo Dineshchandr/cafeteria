@@ -54,6 +54,11 @@ public class FoodOrderImpl implements FoodOrderServiceApi {
 
         FoodMenuFoodItemMap foodItemMap =
                 foodMenuItemMapDao.findIdByFoodMenuAndFoodItemId(foodOrderDto.getMenuId(), foodOrderDto.getItemId());
+        FoodOrder order = foodOrderDao.findByCustomerId(foodOrderDto.getCustomerId());
+
+        if (order != null) {
+            throw new OrderCreationException("Order already exists for this customer.");
+        }
 
         if (foodItemMap == null) {
             throw new OrderCreationException("Invalid Menu or Food Item ID");
@@ -110,7 +115,7 @@ public class FoodOrderImpl implements FoodOrderServiceApi {
         itemDTO.setId(foodItemMap.getFoodItem().getId());
         itemDTO.setName(foodItemMap.getFoodItem().getName());
         itemDTO.setPrice(foodItemMap.getFoodItem().getPrice());
-        Instant instant=Instant.now();
+        Instant instant = Instant.now();
         itemDTO.setCreatedAt(instant);
         itemDTO.setModifyAt(instant);
 

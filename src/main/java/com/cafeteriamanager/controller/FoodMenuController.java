@@ -2,7 +2,7 @@ package com.cafeteriamanager.controller;
 
 import java.util.List;
 
-import com.cafeteriamanager.dto.FoodMenuItemsQuantityDto;
+import com.cafeteriamanager.dto.RetrieveFoodItemQuantityDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,6 +21,7 @@ import com.cafeteriamanager.dto.DayWiseMenuDTO;
 import com.cafeteriamanager.dto.FoodItemDTO;
 import com.cafeteriamanager.dto.FoodMenuDTO;
 import com.cafeteriamanager.dto.FoodMenuItemMappingDto;
+import com.cafeteriamanager.dto.FoodMenuItemsQuantityDto;
 import com.cafeteriamanager.entity.Availability;
 import com.cafeteriamanager.exception.AlreadyExistingFoodMenuException;
 import com.cafeteriamanager.exception.FoodMenuNotFoundException;
@@ -160,20 +161,31 @@ public class FoodMenuController {
         log.info("Leaving removeMenu() Controller");
         return "MENU IS DELETED SUCCESSFULLY";
     }
+
     @PatchMapping("/addQuantity")
-    public FoodMenuItemsQuantityDto addItemQuantity(@RequestParam(name = "id")Long menuId, @RequestParam(name = "value")Integer quantity ){
+    public FoodMenuItemsQuantityDto addItemQuantity(@RequestParam(name = "id") Long menuId,
+            @RequestParam(name = "value") Integer quantity) {
         log.info("Entering addItemQuantity() Controller ");
-        FoodMenuItemsQuantityDto addItemsQuantity=  foodMenuServiceApi.addItemsQuantity(menuId,quantity);
+        FoodMenuItemsQuantityDto addItemsQuantity = foodMenuServiceApi.addItemsQuantity(menuId, quantity);
         log.info("Leaving addItemQuantity() Controller");
-        return  addItemsQuantity;
+        return addItemsQuantity;
 
     }
 
     @GetMapping("/day-menu")
-   public List<FoodMenuItemMappingDto> retrieveFoodMenuByDay() throws FoodMenuNotFoundException{
+    public List<FoodMenuItemMappingDto> retrieveFoodMenuByDay() throws FoodMenuNotFoundException {
         log.info("Entering retrieveFoodMenuByDay() Controller ");
-        List<FoodMenuItemMappingDto> retrieveTodayMenu=foodMenuServiceApi.retrieveTodayMenu();
+        List<FoodMenuItemMappingDto> retrieveTodayMenu = foodMenuServiceApi.retrieveTodayMenu();
         log.info("Leaving retrieveFoodMenuByDay() Controller");
         return retrieveTodayMenu;
+    }
+
+    @GetMapping("/viewQuantity")
+    public RetrieveFoodItemQuantityDto retrieveFoodQuantity(@RequestParam(name = "menuId") Long FoodMenuID,
+            @RequestParam(name = "itemid") Long FoodItemId) throws FoodMenuNotFoundException {
+        log.info("Entering retrieveFoodQuantity() Controller ");
+        RetrieveFoodItemQuantityDto quantityDto = foodMenuServiceApi.retrieveMenuQuantity(FoodMenuID, FoodItemId);
+        log.info("Leaving retrieveFoodQuantity() Controller");
+        return quantityDto;
     }
 }

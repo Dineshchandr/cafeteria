@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.cafeteriamanager.dto.RetrieveFoodItemQuantityDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -347,6 +348,33 @@ public class FoodMenuImpl implements FoodMenuServiceApi {
         return foodMenuItemMappingDtos;
     }
 
+    @Override
+    public RetrieveFoodItemQuantityDto retrieveMenuQuantity(Long foodMenuId, Long FoodItemId) throws FoodMenuNotFoundException {
+       FoodMenuFoodItemMap menuFoodItemMap= foodMenuItemMapDao.findIdByFoodMenuAndFoodItemId(foodMenuId,foodMenuId);
+      Long itemQuantityMap= foodMenuItemQuantityMapDao.findIdByFoodMenuQuantityId(menuFoodItemMap.getId());
+
+      Optional<FoodMenuItemQuantityMap> foodMenuItemQuantityMap =foodMenuItemQuantityMapDao.findById(itemQuantityMap);
+        RetrieveFoodItemQuantityDto quantityDto=new RetrieveFoodItemQuantityDto();
+      quantityDto.setName(foodMenuItemQuantityMap.get().getFoodMenuFoodItemMap().getFoodmenu().getName());
+
+      FoodItemDTO ItemDTO=new FoodItemDTO();
+        ItemDTO.setId(foodMenuItemQuantityMap.get().getFoodMenuFoodItemMap().getFoodItem().getId());
+        ItemDTO.setName(foodMenuItemQuantityMap.get().getFoodMenuFoodItemMap().getFoodItem().getName());
+        ItemDTO.setPrice(foodMenuItemQuantityMap.get().getFoodMenuFoodItemMap().getFoodItem().getPrice());
+        ItemDTO.setCreatedAt(foodMenuItemQuantityMap.get().getFoodMenuFoodItemMap().getFoodItem().getCreatedAt());
+        ItemDTO.setModifyAt(foodMenuItemQuantityMap.get().getFoodMenuFoodItemMap().getFoodItem().getModifyAt());
+      Map<FoodItemDTO,Integer>map=new HashMap<>();
+        Set<Availability> availabilities = new HashSet<>();
+        Set<Availability> set = Set.copyOf(foodMenuItemQuantityMap.get().getFoodMenuFoodItemMap().getFoodmenu().getAvailability());
+        availabilities.addAll(set);
+
+        map.put(ItemDTO,foodMenuItemQuantityMap.get().getQuantity());
+        quantityDto.setFoodMenuItemsQuantity(map);
+        quantityDto.setAvailability(availabilities);
+        quantityDto.setFoodMenuItemsQuantity(map);
+
+        return quantityDto;
+    }
 
 
 }
