@@ -53,5 +53,16 @@ public class CustomException {
         return  new ResponseEntity<>(errorDetail,HttpStatus.NOT_FOUND);
 
     }
+    @ExceptionHandler
+    public ResponseEntity<ErrorDetail>OrderCreationException(OrderCreationException orderCreationException){
+       ErrorDetail errorDetail= ErrorDetail.builder().message(HttpStatus.NOT_ACCEPTABLE.name()).details(orderCreationException.getMessage()).build();
+       return new ResponseEntity<>(errorDetail,HttpStatus.NOT_ACCEPTABLE);
+    }
+    @ExceptionHandler
+    public ResponseEntity<ErrorDetail>InsufficientFoodItemException(InsufficientFoodItemException insufficientFoodItemException){
+       ErrorDetail errorDetail= ErrorDetail.builder().message(HttpStatus.NOT_ACCEPTABLE.name()).details(insufficientFoodItemException.getMessage()).build();
+       return new ResponseEntity<>(errorDetail,HttpStatus.NOT_ACCEPTABLE);
+    }
+
 
 }

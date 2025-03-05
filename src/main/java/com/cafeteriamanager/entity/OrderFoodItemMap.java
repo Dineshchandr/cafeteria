@@ -31,6 +31,7 @@ public class OrderFoodItemMap {
     private FoodMenu foodMenu;
     @OneToOne
     private FoodItem foodItem;
+
     @NotNull(message = "The ordered food item quantity must not be empty")
     @Column(name = "quantity")
     private Integer quantity;
