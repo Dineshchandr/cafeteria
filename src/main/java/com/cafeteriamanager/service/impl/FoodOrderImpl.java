@@ -2,9 +2,14 @@ package com.cafeteriamanager.service.impl;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import com.cafeteriamanager.exception.FoodOrderNotFoundException;
+import com.cafeteriamanager.mapper.FoodOrderMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +47,7 @@ public class FoodOrderImpl implements FoodOrderServiceApi {
     @Autowired
     private FoodMenuItemQuantityMapDao foodMenuItemQuantityMapDao;
     @Autowired
-    private FoodItemMapper foodItemMapper;
+    private FoodOrderMapper foodOrderMapper;
     @Autowired
     private FoodOrderDao foodOrderDao;
     @Autowired
@@ -125,5 +130,19 @@ public class FoodOrderImpl implements FoodOrderServiceApi {
 
         return responseDto;
     }
+
+    @Override
+    public List<FoodOrderDto> retrieveAllOrder() throws FoodOrderNotFoundException {
+        List<FoodOrder> foodOrders = foodOrderDao.findAll();
+
+        if (foodOrders.isEmpty()) {
+            throw new FoodOrderNotFoundException("No food orders found");
+        }
+
+        return foodOrders.stream()
+                .map(foodOrderMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
 
 }

@@ -63,6 +63,10 @@ public class CustomException {
        ErrorDetail errorDetail= ErrorDetail.builder().message(HttpStatus.NOT_ACCEPTABLE.name()).details(insufficientFoodItemException.getMessage()).build();
        return new ResponseEntity<>(errorDetail,HttpStatus.NOT_ACCEPTABLE);
     }
-
+@ExceptionHandler
+    public ResponseEntity<ErrorDetail>FoodOrderNotFoundException(FoodOrderNotFoundException foodOrderNotFoundException){
+        ErrorDetail errorDetail= ErrorDetail.builder().message(HttpStatus.NOT_FOUND.name()).details(foodOrderNotFoundException.getMessage()).build();
+        return new ResponseEntity<>(errorDetail,HttpStatus.NOT_FOUND);
+    }
 
 }

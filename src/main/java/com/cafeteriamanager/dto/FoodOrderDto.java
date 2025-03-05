@@ -2,6 +2,7 @@ package com.cafeteriamanager.dto;
 
 import com.cafeteriamanager.dao.FoodItemDao;
 import com.cafeteriamanager.entity.OrderStatus;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,6 +14,7 @@ import java.util.Map;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class FoodOrderDto {
     @Schema(description = "The unique identifier of the food order")
     @NotNull(message = "Food order id must not be empty")
