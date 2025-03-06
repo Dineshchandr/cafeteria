@@ -9,6 +9,7 @@ import com.cafeteriamanager.service.api.FoodOrderServiceApi;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +25,7 @@ import java.util.List;
 @AllArgsConstructor
 @RequestMapping(FoodOrderController.baseUrl )
 public class FoodOrderController {
-        static final String baseUrl = "/order";
+        static final String baseUrl = "/order-page";
 
     @Autowired
     private FoodOrderServiceApi foodOrderServiceApi;
@@ -39,7 +40,31 @@ public class FoodOrderController {
 
     @GetMapping("/orders")
     public List<FoodOrderDto> retrieveOrder()throws FoodOrderNotFoundException{
-       return foodOrderServiceApi.retrieveAllOrder();
+        log.info("Entering retrieveOrder() Controller ");
+
+        List<FoodOrderDto> list=foodOrderServiceApi.retrieveAllOrder();
+        log.info("Leaving retrieveOrder() Controller");
+        return list;
+
+    }
+
+    @GetMapping("/order/{orderId}")
+    public FoodOrderDto retrieveOrderById(@PathVariable(name = "orderId")  Long id)throws FoodOrderNotFoundException{
+        log.info("Entering retrieveOrderById() Controller ");
+
+        FoodOrderDto foodOrderDto= foodOrderServiceApi.fetchOrderById(id);
+        log.info("Leaving retrieveOrderById() Controller");
+        return foodOrderDto;
+
+    }
+
+    @DeleteMapping("/delete-Order/{orderId}")
+    public  String deleteOrderById(@PathVariable(name = "orderId")Long id)throws FoodOrderNotFoundException{
+        log.info("Entering deleteOrderById() Controller ");
+        foodOrderServiceApi.deleteOrderById(id);
+        log.info("Leaving deleteOrderById() Controller");
+        return  "ORDER DELETED";
+
     }
 
 }

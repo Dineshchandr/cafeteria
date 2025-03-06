@@ -2,14 +2,11 @@ package com.cafeteriamanager.service.impl;
 
 import java.time.Instant;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.cafeteriamanager.exception.FoodOrderNotFoundException;
-import com.cafeteriamanager.mapper.FoodOrderMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,11 +24,14 @@ import com.cafeteriamanager.entity.FoodMenuItemQuantityMap;
 import com.cafeteriamanager.entity.FoodOrder;
 import com.cafeteriamanager.entity.OrderFoodItemMap;
 import com.cafeteriamanager.entity.OrderStatus;
+import com.cafeteriamanager.exception.FoodOrderNotFoundException;
 import com.cafeteriamanager.exception.InsufficientFoodItemException;
 import com.cafeteriamanager.exception.OrderCreationException;
-import com.cafeteriamanager.mapper.FoodItemMapper;
 import com.cafeteriamanager.mapper.FoodMenuMapper;
+import com.cafeteriamanager.mapper.FoodOrderMapper;
 import com.cafeteriamanager.service.api.FoodOrderServiceApi;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class FoodOrderImpl implements FoodOrderServiceApi {
@@ -139,10 +139,48 @@ public class FoodOrderImpl implements FoodOrderServiceApi {
             throw new FoodOrderNotFoundException("No food orders found");
         }
 
-        return foodOrders.stream()
-                .map(foodOrderMapper::toDto)
-                .collect(Collectors.toList());
+        return foodOrders.stream().map(foodOrderMapper::toDto).collect(Collectors.toList());
     }
 
+    @Override
+    public FoodOrderDto fetchOrderById(Long orderId) throws FoodOrderNotFoundException {
+        return foodOrderDao.findById(orderId).map(foodOrderMapper::toDto)
+                .orElseThrow(() -> new FoodOrderNotFoundException("Food order with ID " + orderId + " not found"));
+    }
+
+    @Override
+    @Transactional
+    public void deleteOrderById(Long orderId) throws FoodOrderNotFoundException {
+
+        Optional<OrderFoodItemMap> verifyId = orderFoodItemMapDao.findById(orderId);
+
+        if (verifyId.isPresent()) {
+
+
+            Integer deletedQuantity = verifyId.get().getQuantity();
+
+            Long menuId = orderFoodItemMapDao.findFoodItemIdByOrderId(orderId);
+
+            Long itemQuantityMapId = foodMenuItemQuantityMapDao.findIdByFoodMenuQuantityId(menuId);
+            Optional<FoodMenuItemQuantityMap> itemQuantityMapOpt = foodMenuItemQuantityMapDao.findById(itemQuantityMapId);
+
+            FoodMenuItemQuantityMap itemQuantityMap = itemQuantityMapOpt.orElseThrow(() -> new FoodOrderNotFoundException(
+                    "Food menu item quantity mapping not found for ID: " + itemQuantityMapId));
+
+            Integer existingQuantity = itemQuantityMap.getQuantity();
+            Integer updatedQuantity = deletedQuantity + existingQuantity;
+
+            itemQuantityMap.setQuantity(updatedQuantity);
+            itemQuantityMap.setModifyAt(Instant.now());
+
+            foodMenuItemQuantityMapDao.save(itemQuantityMap);
+            orderFoodItemMapDao.deleteById(orderId);
+            foodOrderDao.deleteById(orderId);
+
+        }else {
+            throw new FoodOrderNotFoundException("Food order with ID  "+ orderId +"  not found");
+    }
+
+    }
 
 }

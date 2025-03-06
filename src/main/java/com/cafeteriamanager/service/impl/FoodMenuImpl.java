@@ -193,11 +193,12 @@ public class FoodMenuImpl implements FoodMenuServiceApi {
     @Override
 
     @Transactional
-    public FoodMenuItemMappingDto removeMenuItemById(Long itemId) {
+    public FoodMenuItemMappingDto removeMenuItemById(Long itemId) throws FoodMenuNotFoundException {
         FoodMenuFoodItemMap itemList = foodMenuItemMapDao.findByFoodItemId(itemId);
 
+
         if (itemList == null) {
-            throw new RuntimeException("Food item mapping not found!");
+            throw new FoodMenuNotFoundException("Food item mapping not found!");
         }
 
         FoodItem itemDelete = itemList.getFoodItem();
@@ -351,7 +352,11 @@ public class FoodMenuImpl implements FoodMenuServiceApi {
     @Override
     public RetrieveFoodItemQuantityDto retrieveMenuQuantity(Long foodMenuId, Long FoodItemId) throws FoodMenuNotFoundException {
        FoodMenuFoodItemMap menuFoodItemMap= foodMenuItemMapDao.findIdByFoodMenuAndFoodItemId(foodMenuId,foodMenuId);
-      Long itemQuantityMap= foodMenuItemQuantityMapDao.findIdByFoodMenuQuantityId(menuFoodItemMap.getId());
+        if(Objects.isNull(menuFoodItemMap)){
+            throw new FoodMenuNotFoundException("FOOD MENU NOT FOUND");
+        }
+
+        Long itemQuantityMap= foodMenuItemQuantityMapDao.findIdByFoodMenuQuantityId(menuFoodItemMap.getId());
 
       Optional<FoodMenuItemQuantityMap> foodMenuItemQuantityMap =foodMenuItemQuantityMapDao.findById(itemQuantityMap);
         RetrieveFoodItemQuantityDto quantityDto=new RetrieveFoodItemQuantityDto();

@@ -15,4 +15,8 @@ public interface FoodOrderServiceApi {
     FoodOrderDto createFoodOrder(CreateFoodOrderDto CreateFoodOrderDto) throws OrderCreationException, InsufficientFoodItemException;
 
     List<FoodOrderDto> retrieveAllOrder()throws FoodOrderNotFoundException;
+
+    FoodOrderDto fetchOrderById(Long orderId)throws FoodOrderNotFoundException;
+
+    void  deleteOrderById(Long orderId) throws FoodOrderNotFoundException;
 }

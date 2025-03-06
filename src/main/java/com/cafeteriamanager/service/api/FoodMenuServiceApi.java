@@ -7,6 +7,7 @@ import com.cafeteriamanager.dto.FoodMenuItemsQuantityDto;
 import com.cafeteriamanager.dto.RetrieveFoodItemQuantityDto;
 import com.cafeteriamanager.entity.Availability;
 import com.cafeteriamanager.exception.FoodMenuNotFoundException;
+import com.cafeteriamanager.exception.FoodOrderNotFoundException;
 import com.cafeteriamanager.exception.NoFoodForSpecificDayException;
 
 import java.util.List;
@@ -71,7 +72,7 @@ public interface FoodMenuServiceApi {
      * @param itemId
      * @return
      */
-    FoodMenuItemMappingDto removeMenuItemById(Long itemId);
+    FoodMenuItemMappingDto removeMenuItemById(Long itemId) throws FoodOrderNotFoundException;
 
     /**
      *
