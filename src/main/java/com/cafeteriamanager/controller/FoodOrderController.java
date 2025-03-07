@@ -2,6 +2,7 @@ package com.cafeteriamanager.controller;
 
 import com.cafeteriamanager.dto.CreateFoodOrderDto;
 import com.cafeteriamanager.dto.FoodOrderDto;
+import com.cafeteriamanager.dto.UpdateFoodOrderDto;
 import com.cafeteriamanager.exception.FoodOrderNotFoundException;
 import com.cafeteriamanager.exception.InsufficientFoodItemException;
 import com.cafeteriamanager.exception.OrderCreationException;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -64,6 +66,15 @@ public class FoodOrderController {
         foodOrderServiceApi.deleteOrderById(id);
         log.info("Leaving deleteOrderById() Controller");
         return  "ORDER DELETED";
+
+    }
+
+    @PatchMapping("/update-order")
+    public  FoodOrderDto UpdateFoodOrder(@RequestBody UpdateFoodOrderDto updateFoodOrderDto)throws FoodOrderNotFoundException{
+        log.info("Entering UpdateFoodOrder() Controller ");
+        FoodOrderDto foodOrderDto=foodOrderServiceApi.updateFoodOrder(updateFoodOrderDto);
+        log.info("Leaving UpdateFoodOrder() Controller");
+        return foodOrderDto;
 
     }
 

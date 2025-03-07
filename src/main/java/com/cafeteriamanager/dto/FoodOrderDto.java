@@ -39,4 +39,7 @@ public class FoodOrderDto {
     @Schema(description = "The timestamp when the food order was created")
     @NotNull(message = "Order created date and time must not be empty")
     private Instant created;
+
+    @NotNull(message = "Order created date and time must not be empty")
+    private Instant  ModifyAt;
 }

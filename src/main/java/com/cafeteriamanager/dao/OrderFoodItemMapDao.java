@@ -12,6 +12,7 @@ public interface OrderFoodItemMapDao extends JpaRepository<OrderFoodItemMap,Long
     @Query("SELECT f.foodItem.id FROM OrderFoodItemMap f WHERE f.foodOrder.id = :orderId")
     Long findFoodItemIdByOrderId(@Param("orderId") Long orderId);
 
-
+    @Query("SELECT f.id FROM OrderFoodItemMap f WHERE f.foodOrder.id = :orderId")
+    Long findIdByOrderId(@Param("orderId") Long orderId);
 
 }

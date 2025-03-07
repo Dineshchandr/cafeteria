@@ -316,25 +316,22 @@ public class FoodMenuImpl implements FoodMenuServiceApi {
 
         for (FoodMenu foodMenu : foodMenus) {
             Long menuId = foodMenu.getId();
-            Long foodMenuItemId = foodMenuItemMapDao.findIdByFoodMenuId(menuId);
 
-            if (foodMenuItemId == null) {
+            List<FoodMenuFoodItemMap> foodItemMappings = foodMenuItemMapDao.findAllByFoodMenuId(menuId);
+
+            if (foodItemMappings.isEmpty()) {
                 throw new FoodMenuNotFoundException("No item mapping found for menu ID: " + menuId);
             }
 
-            Optional<FoodMenuFoodItemMap> optionalFoodItemMap = foodMenuItemMapDao.findById(foodMenuItemId);
-
-            if (optionalFoodItemMap.isEmpty()) {
-                throw new FoodMenuNotFoundException("No food menu item found for ID: " + foodMenuItemId);
-            }
-
-            FoodMenuFoodItemMap foodItemMap = optionalFoodItemMap.get();
-            FoodItem foodItem = foodItemMap.getFoodItem();
-
             List<FoodItemDTO> foodItemDTOs = new ArrayList<>();
-            if (foodItem != null) {
-                foodItemDTOs.add(foodItemMapper.toDto(foodItem));
+
+            for (FoodMenuFoodItemMap foodItemMap : foodItemMappings) {
+                FoodItem foodItem = foodItemMap.getFoodItem();
+                if (foodItem != null) {
+                    foodItemDTOs.add(foodItemMapper.toDto(foodItem));
+                }
             }
+
             FoodMenuItemMappingDto dto = new FoodMenuItemMappingDto(
                     foodMenu.getName(),
                     foodMenu.getAvailability(),
@@ -347,6 +344,7 @@ public class FoodMenuImpl implements FoodMenuServiceApi {
         }
 
         return foodMenuItemMappingDtos;
+
     }
 
     @Override
