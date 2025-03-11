@@ -46,11 +46,11 @@ public class FoodItem {
     private Double price;
 
     @NotNull(message = "The food item created date and time must not be empty")
-    @Column(name = "createdAt")
+    @Column(name = "created_at")
     private Instant createdAt;
 
     @NotNull(message = "The food item modifyAt date and time must not be empty")
-    @Column(name = "modifyAt")
+    @Column(name = "modified_at")  // Change "modify_at" to match DB schema
     private Instant ModifyAt;
 
 }

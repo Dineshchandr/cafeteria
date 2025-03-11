@@ -20,6 +20,8 @@ public interface FoodMenuItemQuantityMapDao extends JpaRepository<FoodMenuItemQu
     Integer findByFoodMenuQuantity(@Param("id") Long id);
 
 
+    @Query("SELECT f.foodMenuFoodItemMap FROM FoodMenuItemQuantityMap f WHERE f.id = :id")
+    Long findByFoodMenuMapID(@Param("id") Long id);
 
 
 

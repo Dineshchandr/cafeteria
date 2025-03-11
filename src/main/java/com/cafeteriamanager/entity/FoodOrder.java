@@ -42,7 +42,7 @@ public class FoodOrder {
     private OrderStatus orderStatus;
 
     @NotNull(message = "The food order created date and time must not be empty")
-    @Column(name = "created")
+    @Column(name = "created")  // This should match the DB column name
     private Instant created;
 
 }

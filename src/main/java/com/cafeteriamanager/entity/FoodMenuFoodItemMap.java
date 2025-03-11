@@ -18,7 +18,7 @@ import jakarta.persistence.Table;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "foodmenu-item-map")
+@Table(name = "menu_item_map")
 public class FoodMenuFoodItemMap {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -42,7 +42,7 @@ public class FoodMenu {
     private Instant createdAt;
 
     @NotNull(message = "The food item modifyAt date and time must not be empty")
-    @Column(name = "modifyAt")
+    @Column(name = "modified_at")  // Change "modify_at" to match DB schema
     private Instant ModifyAt;
 
     @ElementCollection(targetClass = Availability.class)

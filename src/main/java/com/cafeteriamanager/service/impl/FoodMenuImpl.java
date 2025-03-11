@@ -4,6 +4,7 @@ import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -248,7 +249,7 @@ public class FoodMenuImpl implements FoodMenuServiceApi {
     }
 
     @Override
-    public FoodMenuItemsQuantityDto addItemsQuantity(Long menuId, Integer quantity) throws FoodMenuNotFoundException {
+    public List<FoodMenuItemsQuantityDto> addItemsQuantity(Long menuId, Integer quantity) throws FoodMenuNotFoundException {
         FoodMenu menu=  foodMenuDao.findById(menuId).orElseThrow(() -> new FoodMenuNotFoundException("MENU NOT FOUND"));
 
         Long foodMenuMapId = foodMenuItemMapDao.findIdByFoodMenuId(menuId);
@@ -292,11 +293,11 @@ public class FoodMenuImpl implements FoodMenuServiceApi {
         Map<FoodMenuDTO,Integer>map=new HashMap<>();
         map.put(menuDTO ,itemQuantityMap.getQuantity());
 
-        return new FoodMenuItemsQuantityDto(
+        return Collections.singletonList(new FoodMenuItemsQuantityDto(
                 name,
                 availabilitySet,
                 map
-        );
+        ));
     }
 
 

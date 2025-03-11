@@ -24,7 +24,7 @@ import java.time.Instant;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "Food-Menu-Item-QuantityMap")
+@Table(name = "food_menu_item_quantity_map")
 public class FoodMenuItemQuantityMap {
 
     @Id
@@ -36,7 +36,7 @@ public class FoodMenuItemQuantityMap {
 
     @NotNull(message = "The food menu item quantity map quantity must not be empty")
     @Column(name = "quantity")
-    @Min(value = 0,message = "Quantity must not be negative value")
+    @Min(value = 0, message = "Quantity must be greater than 0")
     private Integer quantity;
 
     @NotNull(message = "The food item created date and time must not be empty")
@@ -44,6 +44,6 @@ public class FoodMenuItemQuantityMap {
     private Instant createdAt;
 
     @NotNull(message = "The food item modifyAt date and time must not be empty")
-    @Column(name = "modifyAt")
+    @Column(name = "modified_at")  // Change "modify_at" to match DB schema
     private Instant ModifyAt;
 }
