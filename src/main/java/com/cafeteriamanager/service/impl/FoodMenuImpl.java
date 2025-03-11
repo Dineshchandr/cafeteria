@@ -249,10 +249,10 @@ public class FoodMenuImpl implements FoodMenuServiceApi {
     }
 
     @Override
-    public List<FoodMenuItemsQuantityDto> addItemsQuantity(Long menuId, Integer quantity) throws FoodMenuNotFoundException {
+    public List<FoodMenuItemsQuantityDto> addItemsQuantity(Long menuId,Long itemId, Integer quantity) throws FoodMenuNotFoundException {
         FoodMenu menu=  foodMenuDao.findById(menuId).orElseThrow(() -> new FoodMenuNotFoundException("MENU NOT FOUND"));
 
-        Long foodMenuMapId = foodMenuItemMapDao.findIdByFoodMenuId(menuId);
+        Long foodMenuMapId = foodMenuItemMapDao.findIdByFoodMenuAndFoodItemId(menuId,itemId).getId();
         if (foodMenuMapId == null) {
             throw new FoodMenuNotFoundException("Food menu mapping not found for menu ID: " + menuId);
         }
@@ -350,7 +350,7 @@ public class FoodMenuImpl implements FoodMenuServiceApi {
 
     @Override
     public RetrieveFoodItemQuantityDto retrieveMenuQuantity(Long foodMenuId, Long FoodItemId) throws FoodMenuNotFoundException {
-       FoodMenuFoodItemMap menuFoodItemMap= foodMenuItemMapDao.findIdByFoodMenuAndFoodItemId(foodMenuId,foodMenuId);
+       FoodMenuFoodItemMap menuFoodItemMap= foodMenuItemMapDao.findIdByFoodMenuAndFoodItemId(foodMenuId,FoodItemId);
         if(Objects.isNull(menuFoodItemMap)){
             throw new FoodMenuNotFoundException("FOOD MENU NOT FOUND");
         }

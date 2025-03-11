@@ -163,10 +163,10 @@ public class FoodMenuController {
     }
 
     @PatchMapping("/addQuantity")
-    public List<FoodMenuItemsQuantityDto> addItemQuantity(@RequestParam(name = "id") Long menuId,
+    public List<FoodMenuItemsQuantityDto> addItemQuantity(@RequestParam(name = "menuId") Long menuId,@RequestParam(name = "itemId") Long itemId,
             @RequestParam(name = "value") Integer quantity) {
         log.info("Entering addItemQuantity() Controller ");
-        List<FoodMenuItemsQuantityDto> addItemsQuantity = foodMenuServiceApi.addItemsQuantity(menuId, quantity);
+        List<FoodMenuItemsQuantityDto> addItemsQuantity = foodMenuServiceApi.addItemsQuantity(menuId,itemId, quantity);
         log.info("Leaving addItemQuantity() Controller");
         return addItemsQuantity;
 

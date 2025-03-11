@@ -98,7 +98,7 @@ public interface FoodMenuServiceApi {
      * @throws FoodMenuNotFoundException
      */
 
-    List<FoodMenuItemsQuantityDto> addItemsQuantity(Long menuId,Integer quantity) throws FoodMenuNotFoundException;
+    List<FoodMenuItemsQuantityDto> addItemsQuantity(Long menuId,Long itemId,Integer quantity) throws FoodMenuNotFoundException;
 
     /**
      *
