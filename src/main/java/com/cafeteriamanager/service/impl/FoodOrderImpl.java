@@ -217,7 +217,8 @@ public class FoodOrderImpl implements FoodOrderServiceApi {
         Long foodMenuItemMapId = foodMenuItemMapDao.findIdByFoodMenuAndFoodItemId(menu.getId(), item.getId()).getId();
 
         Long foodMenuItemQuantityMapId = foodMenuItemQuantityMapDao.findIdByFoodMenuMapID(foodMenuItemMapId);
-        Optional<FoodMenuItemQuantityMap> menuItemQuantityMapOpt = foodMenuItemQuantityMapDao.findById(foodMenuItemQuantityMapId);
+        Optional<FoodMenuItemQuantityMap> menuItemQuantityMapOpt =
+                foodMenuItemQuantityMapDao.findById(foodMenuItemQuantityMapId);
         if (!menuItemQuantityMapOpt.isPresent()) {
             throw new IllegalArgumentException("Food menu item quantity map not found");
         }
@@ -240,15 +241,14 @@ public class FoodOrderImpl implements FoodOrderServiceApi {
         Long resultsMenu = orderFoodItemMapDao.findFoodItemIdAndFoodmenuId(updateRequest.getOrderId());
         Long resultsItem = orderFoodItemMapDao.findFoodItemIdByOrderId(updateRequest.getOrderId());
 
-        Long Map= foodMenuItemMapDao.findIdByFoodMenuAndFoodItemId(resultsMenu,resultsItem).getId();
+        Long Map = foodMenuItemMapDao.findIdByFoodMenuAndFoodItemId(resultsMenu, resultsItem).getId();
 
-        Optional<FoodMenuItemQuantityMap> foodMenuItemQuantityMap=  foodMenuItemQuantityMapDao.findById(Map);
-        FoodMenuItemQuantityMap quantityMap=new FoodMenuItemQuantityMap();
+        Optional<FoodMenuItemQuantityMap> foodMenuItemQuantityMap = foodMenuItemQuantityMapDao.findById(Map);
+        FoodMenuItemQuantityMap quantityMap = new FoodMenuItemQuantityMap();
 
-        int oldQuantity= foodMenuItemQuantityMapDao.findByFoodMenuQuantity(updateRequest.getOrderId());
-        int previous=foodMenuItemQuantityMap.get().getQuantity();
-        int newValue=oldQuantity+previous;
-
+        int oldQuantity = foodMenuItemQuantityMapDao.findByFoodMenuQuantity(updateRequest.getOrderId());
+        int previous = foodMenuItemQuantityMap.get().getQuantity();
+        int newValue = oldQuantity + previous;
 
         quantityMap.setId(foodMenuItemQuantityMap.get().getId());
         quantityMap.setFoodMenuFoodItemMap(foodMenuItemQuantityMap.get().getFoodMenuFoodItemMap());
@@ -287,5 +287,44 @@ public class FoodOrderImpl implements FoodOrderServiceApi {
         return orderDto;
     }
 
+    @Override
+    public FoodOrderDto updateOrderStatus(Long id, String orderStatus) throws FoodOrderNotFoundException {
+        FoodOrder order =
+                foodOrderDao.findById(id).orElseThrow(() -> new FoodOrderNotFoundException("FOOD ORDER NOT FOUND"));
+        FoodOrder foodOrder = new FoodOrder();
+        foodOrder.setId(order.getId());
+        foodOrder.setTotalCost(order.getTotalCost());
+        foodOrder.setCustomerId(order.getCustomerId());
+        foodOrder.setCreated(order.getCreated());
+        foodOrder.setOrderStatus(OrderStatus.valueOf(orderStatus));
+        FoodOrder updateOrder = foodOrderDao.save(foodOrder);
+        Long foodItem = orderFoodItemMapDao.findFoodItemIdByOrderId(updateOrder.getId());
+
+        Optional<FoodItem> item = foodItemDao.findById(foodItem);
+
+        FoodItemDTO foodItemDto = new FoodItemDTO();
+        foodItemDto.setId(item.get().getId());
+        foodItemDto.setName(item.get().getName());
+        foodItemDto.setPrice(item.get().getPrice());
+        Instant now = Instant.now();
+        foodItemDto.setCreatedAt(now);
+        foodItemDto.setModifyAt(now);
+
+        Integer quantity = orderFoodItemMapDao.findIdByquantity(updateOrder.getId());
+
+        Map<FoodItemDTO, Integer> foodItemsQuantityMap = new HashMap<>();
+        foodItemsQuantityMap.put(foodItemDto, quantity);
+
+        FoodOrderDto foodOrderDto = new FoodOrderDto();
+        foodOrderDto.setId(updateOrder.getId());
+        foodOrderDto.setCustomerId(updateOrder.getCustomerId());
+        foodOrderDto.setTotalCost(updateOrder.getTotalCost());
+        foodOrderDto.setCreated(updateOrder.getCreated());
+        foodOrderDto.setModifyAt(Instant.now());
+        foodOrderDto.setOrderStatus(updateOrder.getOrderStatus());
+        foodOrderDto.setFoodItemsQuantityMap(foodItemsQuantityMap);
+
+        return foodOrderDto;
+    }
 
 }

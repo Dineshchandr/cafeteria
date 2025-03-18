@@ -3,6 +3,7 @@ package com.cafeteriamanager.controller;
 import com.cafeteriamanager.dto.CreateFoodOrderDto;
 import com.cafeteriamanager.dto.FoodOrderDto;
 import com.cafeteriamanager.dto.UpdateFoodOrderDto;
+import com.cafeteriamanager.exception.FoodMenuNotFoundException;
 import com.cafeteriamanager.exception.FoodOrderNotFoundException;
 import com.cafeteriamanager.exception.InsufficientFoodItemException;
 import com.cafeteriamanager.exception.OrderCreationException;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -76,6 +78,14 @@ public class FoodOrderController {
         log.info("Leaving UpdateFoodOrder() Controller");
         return foodOrderDto;
 
+    }
+
+    @PatchMapping("/update-status")
+    public  FoodOrderDto updateOrderStatus(@RequestParam(name = "status")String status,
+                                           @RequestParam (name = "orderid") Long Id) throws FoodMenuNotFoundException{
+        log.info("Entering updateOrderStatus() Controller ");
+       FoodOrderDto orderDto=  foodOrderServiceApi.updateOrderStatus(Id,status);
+       return  orderDto;
     }
 
 }

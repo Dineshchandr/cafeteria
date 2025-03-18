@@ -1,10 +1,8 @@
 package com.cafeteriamanager.service.api;
 
 import com.cafeteriamanager.dto.CreateFoodOrderDto;
-import com.cafeteriamanager.dto.FoodMenuDTO;
 import com.cafeteriamanager.dto.FoodOrderDto;
 import com.cafeteriamanager.dto.UpdateFoodOrderDto;
-import com.cafeteriamanager.exception.FoodMenuNotFoundException;
 import com.cafeteriamanager.exception.FoodOrderNotFoundException;
 import com.cafeteriamanager.exception.InsufficientFoodItemException;
 import com.cafeteriamanager.exception.OrderCreationException;
@@ -22,4 +20,8 @@ public interface FoodOrderServiceApi {
     void  deleteOrderById(Long orderId) throws FoodOrderNotFoundException;
 
      FoodOrderDto updateFoodOrder(UpdateFoodOrderDto updateFoodOrderDto) throws FoodOrderNotFoundException;
+
+     FoodOrderDto updateOrderStatus(Long id,String orderStatus) throws FoodOrderNotFoundException;
+
+
 }
